@@ -43,9 +43,8 @@
 	{
 		return Math.sqrt( Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2) );
 	}
-	
-	function constructor(target_name, square_size, canvas_name, output_name, make_btn_name, zone_num_name, addzone_btn_name, reset_btn_name, img_src_name, img_W_name, img_H_name, img_load_name, sqsize_input_name, sqsize_btn_name, linecolor_input_name, linecolor_btn_name)
-	{
+	function check_constructor_params(target_name, square_size, canvas_name, output_name, make_btn_name, zone_num_name, addzone_btn_name, reset_btn_name, img_src_name, img_W_name, img_H_name, img_load_name, sqsize_input_name, sqsize_btn_name, linecolor_input_name, linecolor_btn_name){
+		var res = false;
 		var target_found = false;
 		if (typeof target_name !== 'undefined')
 		{
@@ -302,16 +301,27 @@
 		}
 		
 		if(target_found && canvas_found && output_found && make_btn_found && zone_num_found && addzone_btn_found && reset_btn_found && img_src_found && img_W_found && img_H_found && img_load_found && sqsize_input_found && sqsize_btn_found && linecolor_input_found && linecolor_btn_found)
-		{	
+		{
+			res = true;
+		}
+		return res;
+	}
+	function constructor(target_name, square_size, canvas_name, output_name, make_btn_name, zone_num_name, addzone_btn_name, reset_btn_name, img_src_name, img_W_name, img_H_name, img_load_name, sqsize_input_name, sqsize_btn_name, linecolor_input_name, linecolor_btn_name)
+	{
+		const is_checked = check_constructor_params(target_name, square_size, canvas_name, output_name, make_btn_name, zone_num_name, addzone_btn_name, reset_btn_name, img_src_name, img_W_name, img_H_name, img_load_name, sqsize_input_name, sqsize_btn_name, linecolor_input_name, linecolor_btn_name);
+		if(is_checked){
 			$('#'+make_btn_name)[0].disabled = true;
 			$('#'+addzone_btn_name)[0].disabled = true;
 			$('#'+zone_num_name)[0].disabled = true;
-			
 			var target_W = $("#"+target_name).width();
 			var target_H = $("#"+target_name).height();
 			var target_offset_W = $("#"+target_name).offset().left;
 			var target_offset_H = $("#"+target_name).offset().top;
-			
+			console.log("target_offset_W=",target_offset_W)
+			console.log("target_offset_H=",target_offset_H)
+			//var maindiv = document.getElementById("main_div")
+			var box = $("#"+target_name).getBoundingClientRect();
+			console.log("box=", box)
 			data['make_btn'] = make_btn_name;
 			data['zone_num'] = zone_num_name;
 			data['addzone_btn'] = addzone_btn_name;
@@ -325,7 +335,6 @@
 			data['sqsize_btn'] = sqsize_btn_name;
 			data['linecolor_input'] = linecolor_input_name;
 			data['linecolor_btn'] = linecolor_btn_name;
-			
 			data['target'] = target_name;
 			data['width'] = target_W;
 			data['height'] = target_H;
@@ -333,72 +342,52 @@
 			data['squares_W'] = Math.floor(target_W/square_size)+1;
 			data['squares_H'] = Math.floor(target_H/square_size)+1;
 			data['line_color'] = "black";
-			
 			data['canvas'] = canvas_name;
 			data['image'] = "";
-			
 			//squares array
-			for (j = 0; j < data['squares_H']; j++)
-			{
-				for (i = 0; i < data['squares_W']; i++)
-				{
-					if (j == 0)
-					{
+			for (j = 0; j < data['squares_H']; j++){
+				for (i = 0; i < data['squares_W']; i++){
+					if (j == 0){
 						squares[i] = new Array();
 					}
 					squares[i][j] = 0;
 				}
 			}
-			
 			//canvas binding
-			$('#'+target_name).bind("click", function(event)
-			{
-				//lmmk2_debug(event.clientX + " - " + event.clientY);
-				if (finished_forming == false)
-				{
-					
-					if (point_count > 1)
-					{
+			$('#'+target_name).bind("click", function(event){
+				console.log("pageX=",event.pageX)
+				console.log("pageY=",event.pageY)
+				//@Если закончено формирование фигуры и ещё не нажата кнопка "add zone", то клик по канвасу не даст никакого эффекта
+				if (finished_forming == false){
+					if (point_count > 1){
 						var distance_ok = true;
 						var point_data;
-						for (i in points)
-						{
+						for (i in points){
 							point_data = points[i].split("-");
-							if ( point_distance( (event.pageX - target_offset_W), (event.pageY - target_offset_H), point_data[0], point_data[1] ) < min_point_distance )
-							{
+							if ( point_distance( (event.pageX - target_offset_W), (event.pageY - target_offset_H), point_data[0], point_data[1] ) < min_point_distance ){
 								distance_ok = false;
 							}
 						}
-						
-						if (distance_ok == true)
-						{
+						if (distance_ok == true){
 							point_count++;
 							points[point_count] = (event.pageX - target_offset_W) + "-" + (event.pageY - target_offset_H);
 							draw_lines();
 						}
-						/*
-						else
-						{
-							draw_lines();
-							canvas.fillText("Points are too close!", 10, 30);
-						}
-						*/
 					}
-					else
-					{
+					else{
 						point_count++;
 						points[point_count] = (event.pageX - target_offset_W) + "-" + (event.pageY - target_offset_H);
 						draw_lines();
 					}
 				}
 			});
-			
-			$('#'+target_name).bind("contextmenu", function(event)
-			{
+			$('#'+target_name).bind("contextmenu", function(event){
 				end_drawing();
 				return false;
 			});
-			
+			function ClickInElemCoords($elem){
+
+			}
 			//make button binding
 			$('#'+make_btn_name).bind("click", function(event)
 			{
@@ -450,40 +439,25 @@
 			});
 			
 			//add zone button biding
-			$('#'+addzone_btn_name).bind("click", function(event)
-			{
+			$('#'+addzone_btn_name).bind("click", function(event){
 				var zone_num = $('#'+data['zone_num'])[0].value;
-				
-				if (isNaN(zone_num))
-				{
+				if (isNaN(zone_num)){
 					alert("Zone number must be, actually, a number");
 					$('#'+data['zone_num'])[0].value = zone;
-				}
-				else
-				{
+				}else{
 					zone_num = Math.floor(zone_num);
-					
-					if (zone_num > zone_max)
-					{
+					if (zone_num > zone_max){
 						zone = zone_max;
-						
 						$('#'+data['zone_num'])[0].value = zone;
-					}
-					else
-					{
+					}else{
 						zone = zone_num;
-						
 						$('#'+data['zone_num'])[0].value = zone;
 					}
-					
 					points = new Array();
 					point_count = 0;
-					
 					triangles = new Array();
 					triangle_count = 0;
-					
 					finished_forming = false;
-					
 					$('#'+data['addzone_btn'])[0].disabled = true;
 					$('#'+data['zone_num'])[0].disabled = true;
 				}
