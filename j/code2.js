@@ -1,4 +1,57 @@
-	
+function app(){
+	const arr2d = get_arr2d();
+	const canvas = new Canvas("second_canvas").run();
+	canvas.draw_grid_by_arr(arr2d);
+}
+
+function Canvas(id){
+	this._canvas;
+	this.dx=0;
+	this.dy=0;
+	this.square_size=40;
+	this.res=()=>{return this._canvas}
+	this.run=()=>{
+		this._canvas = $('#'+id)[0].getContext('2d');
+		return this;
+	}
+	this.draw_grid_by_arr=(arr2d)=>{
+		console.log("arr2d=", arr2d)
+		this._canvas.clearRect(0, 0, 5000, 5000); 
+		this._canvas.strokeStyle = "rgba(100,100,200,0.5)";
+		for(let i=0; i<arr2d.length; i++){
+			//console.log("i=", i)
+			if(i>0){this.dy+=this.square_size}
+			for(let j=0; j<arr2d[i].length; j++){
+				if(j==0){this.dx = 0}
+				else if(j>0){this.dx+=this.square_size}
+				if(arr2d[i][j] > 0){
+					console.log("!")
+					this._canvas.strokeRect(this.dx,this.dy,this.square_size,this.square_size)
+				}
+			}
+		}
+	}
+}
+function get_canvas(){
+	const canvas = $('#second_canvas')[0].getContext('2d');
+	//canvas.width = 500;
+	//canvas.height = 500;
+	//canvas.css('z-index', 2);
+	//canvas.clearRect(0, 0, 5000, 5000); 
+	canvas.strokeStyle = "rgba(100,100,230,0.5)";
+	canvas.strokeRect(0, 0, 40, 40);
+	return canvas;
+}
+
+function get_arr2d(){
+	return [
+		[1,1,1,0,0, 0,0,0,0,1],
+		[1,0,0,1,0, 0,1,1,1,0],
+		[1,0,0,0,1, 1,0,0,0,0],
+		[1,0,0,1,0, 0,1,0,0,0],
+		[1,1,1,0,0, 0,0,1,1,1]
+	]
+}
 	var data = new Array();
 	
 	var points = new Array();
