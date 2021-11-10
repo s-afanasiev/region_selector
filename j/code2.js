@@ -2,6 +2,44 @@ function app(){
 	const arr2d = get_arr2d();
 	const canvas = new Canvas("second_canvas").run();
 	canvas.draw_grid_by_arr(arr2d);
+	const layers = new oLayers(
+		new oLayer(),
+		arr2d
+	).run();
+}
+
+function oLayers(oLayer, arr2d){
+	this.oLayer = oLayer;
+	this.layers = [];
+	this.layer_pointer=0;
+	this.layer_counter=1;
+	this.max_layers;//run
+	this.cur_layer;
+	this.run=()=>{
+		this.max_layers = this.max_layers_by_arr2d(arr2d);
+		return this;
+	}
+	this.layer=()=>{return this.cur_layer}
+	this.layers=()=>{return this.layers}
+	this.next_layer=()=>{
+		if(this.layer_counter<=this.max_layers){
+			this.cur_layer = this.oLayer.instance(this.layer_counter++);
+			this.layers[this.layer_pointer++] = this.cur_layer;
+			return true;
+		}else{
+			return false;
+		}
+	}	
+	this.prepare_all_layers=()=>{}
+	this.max_layers_by_arr2d=(arr2d)=>{
+		const max = 0;
+		arr2d.forEach(line=>{
+			line.forEach(el=>{
+				if(el>max){max = el;}
+			})
+		})
+		return max;
+	}
 }
 
 function Canvas(id){
