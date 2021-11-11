@@ -1,31 +1,19 @@
-	
 	var data = new Array();
-	
 	var points = new Array();
 	var point_count = 0;
-	
 	var triangles = new Array();
 	var triangle_count = 0;
-	
 	var squares = new Array();
-	
 	var zone = 1;
 	var zone_max = 1;
-	
 	var canvas;
 	var second_canvas;
 	var finished_forming = true;
-	
 	var min_point_distance = 10;
-	
 	var min_square_size = 1;
 	var max_square_size = 50;
-	
 	var pscroll_lopp_pointer = false;
 	lmmk2_debug_on = 1;
-	
-	
-	
 	function lmmk2_debug(string_value, a){
 		if(lmmk2_debug_on == 1){
 			var debug_box = $('#lmmk2debug_box');
@@ -37,10 +25,10 @@
 		}
 	}
 	
-	function point_distance(x1, y1, x2, y2)
-	{
+	function point_distance(x1, y1, x2, y2){
 		return Math.sqrt( Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2) );
 	}
+	
 	function check_constructor_params(target_name, square_size, canvas_name, output_name, make_btn_name, zone_num_name, addzone_btn_name, reset_btn_name, img_src_name, img_W_name, img_H_name, img_load_name, sqsize_input_name, sqsize_btn_name, linecolor_input_name, linecolor_btn_name){
 		var res = false;
 		var target_found = false;
@@ -304,8 +292,8 @@
 		}
 		return res;
 	}
-	function constructor(target_name, square_size, canvas_name, output_name, make_btn_name, zone_num_name, addzone_btn_name, reset_btn_name, img_src_name, img_W_name, img_H_name, img_load_name, sqsize_input_name, sqsize_btn_name, linecolor_input_name, linecolor_btn_name)
-	{
+	
+	function constructor(target_name, square_size, canvas_name, output_name, make_btn_name, zone_num_name, addzone_btn_name, reset_btn_name, img_src_name, img_W_name, img_H_name, img_load_name, sqsize_input_name, sqsize_btn_name, linecolor_input_name, linecolor_btn_name){
 		const is_checked = check_constructor_params(target_name, square_size, canvas_name, output_name, make_btn_name, zone_num_name, addzone_btn_name, reset_btn_name, img_src_name, img_W_name, img_H_name, img_load_name, sqsize_input_name, sqsize_btn_name, linecolor_input_name, linecolor_btn_name);
 		if(is_checked){
 			$('#'+make_btn_name)[0].disabled = true;
