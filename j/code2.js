@@ -2,7 +2,7 @@ function app(){
 	//const arr2d = get_arr2d();
 	//const canvas = new Canvas("second_canvas").run();
 	//canvas.draw_grid_by_arr(arr2d);
-	const oLayers = new Layers(
+	new Layers(
 		new Layer(
 			new Canvas()
 		),
@@ -22,6 +22,14 @@ function draw_button_visibility_layer1(oCanvas){
 		opt.innerHTML = "layer " + i;
 		selected.appendChild(opt);
 	}
+	//selected.onchange='alert("hi")'
+	selected.addEventListener('change', function(evt){
+		Object.keys(selected.options).forEach(key=>{
+			if(selected.options[key].selected == true){
+				console.log("layer selected:", Number(key)+1)
+			}
+		})
+	})
 	input.addEventListener('click', function(){
 		oCanvas.change_visibility();
 	}, false);
