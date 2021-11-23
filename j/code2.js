@@ -1,10 +1,11 @@
-function app(){
+function app(main_div_id){
 	//const arr2d = get_arr2d();
 	//const canvas = new Canvas("second_canvas").run();
 	//canvas.draw_grid_by_arr(arr2d);
 	new App(
 		new Iface([
-			new LoadImgAction()
+			new LoadImgAction(),
+			new AddLayerAction()
 		]),
 		new Field(
 			new ImageCanvas(
@@ -18,13 +19,15 @@ function app(){
 			),
 			new SelectedLayer()
 		)
-	).run("main_div");
+	).run(main_div_id);
 	//canvas.draw_layers(oLayers);
 }
 
 function App(iface, field, selectedLayer){
+	this.parentDiv;
 	this.run=(main_div_id)=>{
-		iface.place(main_div_id).run(field.place(main_div_id).run())
+		this.parentDiv = document.getElementById(main_div_id);
+		iface.place(this.parentDiv).run(field.place(this.parentDiv).run())
 	}
 }
 
@@ -39,20 +42,20 @@ function Iface(actions){
 			this.dom = document.createElement("div");
 			this.dom.id = ID;
 			//this.dom.innerHTML = "<h3>Iface</h3>";
-			this.dom.style.height = '50px';
+			this.dom.style.height = '60px';
 			//this.dom.style.width = '200px';
 			this.dom.style.border = '1px solid green';
 			this.dom.style.background = '#fee';
+			this.dom.style.display = 'table-row';
 		}
 	}
-	this.place=(main_div_id)=>{
+	this.place=(parentDiv)=>{
 		this.init();
-		//@attach Interface on parent div
-		var parentDiv = document.getElementById(main_div_id);
-		parentDiv.appendChild(this.dom);
+		parentDiv.append(this.dom);
 		return this;
 	}
 	this.run=(field)=>{
+		console.log("Iface.run(): field=", field)
 		actions.forEach(act=>{
 			//@ element of interface place himself on Iface panel
 			act.place(this.dom).run(field);
@@ -63,20 +66,28 @@ function Iface(actions){
 function LoadImgAction(){
 	this.inited=false;
 	this.dom;
+	this.imglinkInput;//init
+	this.loadInput;//init
+	this.wInput;//init
+	this.hInput;//init
 	this.init=()=>{
 		if(!this.inited){
 			this.inited = true;
 			this.dom = document.createElement("div");
 			//this.dom.innerHTML = "<h3>Iface</h3>";
-			this.dom.style.height = '40px';
-			this.dom.style.width = '400px';
+			this.dom.style.height = '20px';
+			this.dom.style.width = '420px';
 			this.dom.style.border = '1px solid red';
 			this.dom.style.background = '#eee';
+			this.dom.style.padding = '5px';
+			this.dom.style.display = 'table-cell';
+			this.dom.style["vertical-align"] = 'middle';
 			//@------------
 			const imglinkInput = document.createElement("input");
 			imglinkInput.type="text";
 			imglinkInput.size="20";
 			imglinkInput.value="Image link";
+			this.imglinkInput = imglinkInput;
 			this.dom.append(imglinkInput);
 			//@------------
 			const spanSize = document.createElement("span");
@@ -86,7 +97,9 @@ function LoadImgAction(){
 			const wInput = document.createElement("input");
 			wInput.type="text";
 			wInput.size="2";
-			wInput.value=3840;
+			wInput.value="3840";
+			wInput.disabled=false;
+			this.wInput = wInput;
 			this.dom.append(wInput);
 			//@------------
 			const spanX = document.createElement("span");
@@ -94,12 +107,19 @@ function LoadImgAction(){
 			this.dom.append(spanX);
 			//@------------
 			const hInput = document.createElement("input");
-			hInput.type="text";
+			hInput.setAttribute('type', 'text');
+			//hInput.type="text";
 			hInput.size="2";
-			hInput.value=2160;
-			this.dom.append(hInput);
+			hInput.value="2160";
+			this.hInput = hInput;
+			this.dom.appendChild(hInput);
 			//@---------------
-			//<input id = "loadimg_btn" type = "button" value = "Load image"/>
+			const loadInput = document.createElement("input");
+			loadInput.type="button";
+			loadInput.value="Load image";
+			loadInput.style.background="#ddf";
+			this.loadInput = loadInput;
+			this.dom.appendChild(loadInput);
 		}
 	}
 	this.place=(parentDiv)=>{
@@ -108,7 +128,59 @@ function LoadImgAction(){
 		parentDiv.appendChild(this.dom);
 		return this;
 	}
-	this.run=(field)=>{}
+	this.run=(field)=>{
+		console.log("LoadImgAction.run(): field=", field)
+		//@line below makes visible parameter for function-handler
+		const imglinkInput = this.imglinkInput
+		const wInput = this.wInput.value;
+		const hInput = this.hInput.value;
+		this.loadInput.addEventListener('click', function(evt){
+			console.log("LoadImgAction.run(): loadInput on run: field=", field)
+			//$('#'+data['target']).css("background-image", "url('"+img_src+"')");
+			//$('#'+data['target']).css("background-repeat", "no-repeat");
+			field.provide_background(imglinkInput.value, wInput, hInput);
+		})
+	}
+}
+
+function AddLayerAction(){
+	this.inited=false;
+	this.dom
+	this.AddLayerInput;
+	this.run=()=>{}
+	this.init=()=>{
+		if(!this.inited){
+			this.inited = true;
+			this.dom = document.createElement("div");
+			//this.dom.innerHTML = "<h3>Iface</h3>";
+			this.dom.style.height = '20px';
+			this.dom.style.width = '80px';
+			this.dom.style.border = '1px solid blue';
+			this.dom.style.background = '#fed';
+			this.dom.style.padding = '5px';
+			this.dom.style.display = 'table-cell';
+			this.dom.style["vertical-align"] = 'middle';
+			this.dom.style.position = 'fixed';
+			this.dom.style.bottom = '20px';
+			this.dom.style.left = '20px';
+			this.dom.style["z-index"] = 100;
+			//<input id = "addzone_btn" type = "button" value = "Add Zone" style = "width:200px;height:100px;position:fixed;bottom:20px;left:20px; z-index:3;"/>
+			//@------------
+			const input1 = document.createElement("input");
+			input1.type="button";
+			//input1.size="20";
+			input1.value="Add Layer";
+			this.AddLayerInput = input1;
+			this.dom.append(input1);
+		}
+	}
+	
+	this.place=(parentDiv)=>{
+		this.init()
+		//document.getElementById(parent_div_id).appendChild(this.dom)
+		parentDiv.appendChild(this.dom);
+		return this;
+	}
 }
 
 function SelectedLayer(){
@@ -117,28 +189,53 @@ function SelectedLayer(){
 
 function Field(imageCanvas, layers, selectedLayer){
 	this.inited = false;
+	this.dom;//init
+	this.wd = 700;
+	this.hg = 700;
 	this.init=()=>{
 		if(!this.inited){
 			this.inited = true;
 			this.dom = document.createElement("div");
-			this.dom.innerHTML = "<h4>Field</h4>";
-			this.dom.setAttribute('height', '50px');
-			this.dom.setAttribute('width', '50px');
-			this.dom.setAttribute('background', '#300');
+			//this.dom.innerHTML = "<h4>Field</h4>";
+			this.dom.style.width = this.wd;
+			this.dom.style.height = this.hg;
+			//this.dom.style.background = '#fef';
+			this.dom.style.border = '1px solid purple';
 		}
 	}
-	this.place=(main_div_id)=>{
+	this.place=(parentDiv)=>{
 		//@attach Interface on parent div
 		this.init();
-		var parentDiv = document.getElementById(main_div_id);
-		parentDiv.appendChild(this.dom);
+		parentDiv.append(this.dom);
 		return this;
 	}
-	this.run=(field)=>{}
+	this.run=(field)=>{
+		console.log("Field.run()...")
+		imageCanvas.run(this.dom, this.wd, this.hg)
+		//<canvas width = "800" height = "800" id = "main_canvas" style="position:absolute;"></canvas>
+		return this;
+	}
+	this.provide_background=(src, w, h)=>{
+		console.log("Field: background=",src)
+		this.dom.style.width = w;
+		this.dom.style.height = h;
+		//this.dom.setAttribute("background-image", "url('"+src+"')")
+		this.dom.style["background-image"] = "url('"+src+"')";
+		this.dom.style["background-repeat"] = "no-repeat"
+	}
+	this.imgCanvas=()=>{
+		return imageCanvas.dom;
+	}
 }
 
 function ImageCanvas(loadedImage){
-	this.run=()=>{}
+	this.dom;
+	this.run=(parent, wd, hg)=>{
+		this.dom = document.createElement("canvas");
+		this.dom.style.height = wd;
+		this.dom.style.width = hg;
+		this.dom.style.position = 'absolute';
+	}
 }
 
 function LoadedImage(){
